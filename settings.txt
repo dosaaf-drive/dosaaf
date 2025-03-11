@@ -1,0 +1,4 @@
+time=1200
+path=GAI\
+ball=2
+bilets=40

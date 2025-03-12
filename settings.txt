@@ -1,4 +1,4 @@
 time=1200
-path=GAI\
+path=GAI
 ball=2
 bilets=40

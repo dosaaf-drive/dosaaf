@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Автошкола - Тестирование</title>
+    <title>Автошкола - Система тестирования</title>
     <style>
         :root {
             --primary-color: #3498db;
@@ -15,45 +15,42 @@
             --light-color: #f5f5f5;
             --dark-color: #333;
         }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
         body {
             background-color: #f5f5f5;
             line-height: 1.6;
             color: #333;
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            position: relative;
+            transition: filter 0.3s ease, opacity 0.3s ease;
         }
-
+        /* Эффект размытия при загрузке */
+        .blur {
+            filter: blur(3px);
+            opacity: 0.5;
+        }
         header {
             background-color: var(--primary-color);
             color: white;
-            padding: 20px 0;
             margin-bottom: 30px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-
-        header h1 {
-            text-align: center;
-        }
-
+        header h1 { text-align: center; }
         .mode-selection {
             display: flex;
             justify-content: center;
             gap: 20px;
             margin-bottom: 30px;
         }
-
         .btn {
             padding: 10px 20px;
             border: none;
@@ -62,76 +59,31 @@
             font-size: 16px;
             transition: all 0.3s ease;
         }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--secondary-color);
-        }
-
-        .btn-success {
-            background-color: var(--success-color);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background-color: #219653;
-        }
-
-        .btn-danger {
-            background-color: var(--danger-color);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: #c0392b;
-        }
-
-        .btn-info {
-            background-color: var(--info-color);
-            color: white;
-        }
-
-        .btn-info:hover {
-            background-color: var(--secondary-color);
-        }
-
-        .btn-warning {
-            background-color: var(--warning-color);
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background-color: #e67e22;
-        }
-
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: var(--secondary-color); }
+        .btn-success { background-color: var(--success-color); color: white; }
+        .btn-success:hover { background-color: #219653; }
+        .btn-danger { background-color: var(--danger-color); color: white; }
+        .btn-danger:hover { background-color: #c0392b; }
+        .btn-info { background-color: var(--info-color); color: white; }
+        .btn-info:hover { background-color: var(--secondary-color); }
+        .btn-warning { background-color: var(--warning-color); color: white; }
+        .btn-warning:hover { background-color: #e67e22; }
         .card {
             background-color: white;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             padding: 20px;
             margin-bottom: 20px;
         }
-
-        .active-mode {
-            font-weight: bold;
-            transform: scale(1.05);
-        }
-
-        .exam-setup, .test-area, .results-area {
-            display: none;
-        }
-
+        .active-mode { font-weight: bold; transform: scale(1.05); }
+        .exam-setup, .test-area, .results-area { display: none; }
         .question-navigation {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             margin-bottom: 20px;
         }
-
         .question-number {
             width: 40px;
             height: 40px;
@@ -143,64 +95,28 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-
-        .question-number:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .question-number.active {
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: bold;
-        }
-
-        /* В режиме обучения кружки окрашиваются по верности */
-        .question-number.correct {
-            background-color: var(--success-color);
-            color: white;
-        }
-
-        .question-number.incorrect {
-            background-color: var(--danger-color);
-            color: white;
-        }
-
-        /* В режиме экзамена просто отмечаем, что на вопрос дан ответ */
-        .question-number.answered {
-            background-color: #a0a0a0;
-            color: white;
-        }
-
-        .question-area {
-            margin-bottom: 20px;
-        }
-
-        .question-text {
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
-
-        .explanation-button{
-            margin-top: 10px;
-        }
-
+        .question-number:hover { background-color: var(--primary-color); color: white; }
+        .question-number.active { background-color: var(--primary-color); color: white; font-weight: bold; }
+        /* В обучении: правильный/неправильный ответ */
+        .question-number.correct { background-color: var(--success-color); color: white; }
+        .question-number.incorrect { background-color: var(--danger-color); color: white; }
+        /* В экзамене: отмечаем, что ответ дан */
+        .question-number.answered { background-color: #a0a0a0; color: white; }
+        .question-area { margin-bottom: 20px; }
+        .question-text { font-size: 18px; margin-bottom: 20px; }
         /* Фиксированный размер изображения */
         .question-image {
             margin: 0 auto 10px auto;
             width: 100%;
             max-width: 500px;
             height: auto;
-            /*margin-bottom: 20px;*/
             display: block;
         }
-
         .answer-options {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
-
         .answer-option {
             padding: 15px;
             background-color: #f0f0f0;
@@ -208,32 +124,15 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-
-        .answer-option:hover {
-            background-color: #e0e0e0;
-        }
-
-        .answer-option.selected {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .answer-option.correct {
-            background-color: var(--success-color);
-            color: white;
-        }
-
-        .answer-option.incorrect {
-            background-color: var(--danger-color);
-            color: white;
-        }
-
+        .answer-option:hover { background-color: #e0e0e0; }
+        .answer-option.selected { background-color: var(--primary-color); color: white; }
+        .answer-option.correct { background-color: var(--success-color); color: white; }
+        .answer-option.incorrect { background-color: var(--danger-color); color: white; }
         .navigation-buttons {
             display: flex;
             justify-content: space-between;
             margin-top: 20px;
         }
-
         .explanation {
             background-color: #f8f9fa;
             border-left: 4px solid var(--info-color);
@@ -241,40 +140,31 @@
             margin-top: 20px;
             display: none;
         }
-
+        .explanation p { margin-top: 8px; }
         .timer {
             font-size: 24px;
             text-align: center;
             margin-bottom: 20px;
             font-weight: bold;
         }
-
-        .results-summary {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .results-details {
-            margin-top: 20px;
-        }
-
+        .results-summary { text-align: center; margin-bottom: 20px; }
+        .results-details { margin-top: 20px; }
         .result-item {
             padding: 10px;
             border-bottom: 1px solid #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 10px;
         }
-
-        .result-item:last-child {
-            border-bottom: none;
-        }
-
-
+        .result-item.correct { background-color: #e0f9e0; }
+        .result-item.incorrect { background-color: #f9e0e0; }
+        .result-item:last-child { border-bottom: none; }
+        .hidden { display: none; }
         .bilet-selection {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             margin-bottom: 20px;
         }
-
         .bilet-button {
             width: 60px;
             height: 60px;
@@ -286,12 +176,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-
-        .bilet-button:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
+        .bilet-button:hover { background-color: var(--primary-color); color: white; }
         /* Стилизация выпадающего списка для выбора билета в обучении */
         #training-ticket-select {
             padding: 8px 12px;
@@ -300,13 +185,10 @@
             font-size: 16px;
             margin-left: 10px;
         }
-
-        /* Центрирование кнопки завершения теста */
-        #finish-test {
-            display: block;
-            margin: 20px auto;
-        }
-
+        /* Центрирование кнопки завершения теста в экзамене */
+        #finish-test { display: block; margin: 20px auto; }
+        /* Кнопка возврата для обучения */
+        #back-to-modes-training { display: block; margin: 20px auto; }
         /* Стили для модального окна подтверждения */
         .modal {
             position: fixed;
@@ -327,25 +209,52 @@
             text-align: center;
             width: 300px;
         }
-
-        .hidden {
+        /* Индикатор загрузки */
+        #loader {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 2000;
             display: none;
+        }
+        .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid var(--primary-color);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden { display: none!important; }
+        .explanation-button{
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
+<!-- Индикатор загрузки -->
+<div id="loader">
+    <div class="spinner"></div>
+    <p>Загрузка...</p>
+</div>
 <header>
     <div class="container">
-        <h1>Автошкола - Система тестирования</h1>
+        <h1>ПДД</h1>
     </div>
 </header>
-
-<div class="container">
+<div class="container" id="main-container">
     <div class="mode-selection">
         <button id="training-mode" class="btn btn-primary">Режим обучения</button>
         <button id="exam-mode" class="btn btn-primary">Режим экзамена</button>
     </div>
-
     <!-- Экзамен: настройка билета -->
     <div id="exam-setup" class="exam-setup card">
         <h2>Настройка экзамена</h2>
@@ -356,7 +265,6 @@
         <div id="exam-time" class="timer">Время: 00:00</div>
         <button id="start-exam" class="btn btn-success">Начать экзамен</button>
     </div>
-
     <!-- Область тестирования (общая для обучения и экзамена) -->
     <div id="test-area" class="test-area card">
         <div id="exam-timer" class="timer hidden">Осталось: 00:00</div>
@@ -382,9 +290,11 @@
             <button id="prev-question" class="btn btn-primary">Назад</button>
             <button id="next-question" class="btn btn-primary">Дальше</button>
         </div>
+        <!-- В режиме экзамена кнопка "Завершить тест" всегда видна -->
         <button id="finish-test" class="btn btn-danger">Завершить тест</button>
+        <!-- В режиме обучения кнопка возврата -->
+        <button id="back-to-modes-training" class="btn btn-primary hidden">Вернуться к выбору режима</button>
     </div>
-
     <!-- Область результатов -->
     <div id="results-area" class="results-area card">
         <h2>Результаты теста</h2>
@@ -393,12 +303,11 @@
             <p id="time-taken">Затраченное время: 00:00</p>
         </div>
         <div id="results-details" class="results-details">
-            <!-- Детали результатов -->
+            <!-- Детали результатов будут добавлены динамически -->
         </div>
         <button id="back-to-modes" class="btn btn-primary">Вернуться к выбору режима</button>
     </div>
 </div>
-
 <!-- Модальное окно для подтверждения завершения экзамена -->
 <div id="confirm-modal" class="modal hidden">
     <div class="modal-content">
@@ -407,8 +316,16 @@
         <button id="confirm-no" class="btn btn-danger">Нет</button>
     </div>
 </div>
-
 <script>
+    // Функции для загрузчика и размытия основного блока
+    function showLoader() {
+        document.getElementById('loader').style.display = 'block';
+        document.getElementById('main-container').classList.add('blur');
+    }
+    function hideLoader() {
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('main-container').classList.remove('blur');
+    }
     // Глобальные переменные
     let settings = {};            // Загружаются из settings.txt
     let biletData = {};           // Правильные ответы (из bilet.txt)
@@ -422,14 +339,15 @@
     let userAnswers = {};         // Ключ: "ticket-index", значение: номер выбранного ответа
     let timer = null;
     let remainingTime = 0;
-
     document.addEventListener('DOMContentLoaded', async () => {
+        showLoader();
         await loadSettings();
         await loadBiletData();
         await loadKommentData();
-        initBiletSelection(); // для экзамена
-        initTrainingTicketSelect(); // для обучения
-
+        hideLoader();
+        initBiletSelection();
+        initTrainingTicketSelect();
+        hideModal();
         document.getElementById('training-mode').addEventListener('click', () => setMode('training'));
         document.getElementById('exam-mode').addEventListener('click', () => setMode('exam'));
         document.getElementById('random-bilet').addEventListener('click', selectRandomBilet);
@@ -438,17 +356,15 @@
         document.getElementById('next-question').addEventListener('click', goToNextQuestion);
         document.getElementById('explanation-toggle').addEventListener('click', toggleExplanation);
         document.getElementById('finish-test').addEventListener('click', finishTestHandler);
+        document.getElementById('back-to-modes-training').addEventListener('click', backToModeSelection);
         document.getElementById('back-to-modes').addEventListener('click', backToModeSelection);
-
-        // Обработчики для модального окна
-        document.getElementById('confirm-yes').addEventListener('click', () => {
-            hideModal();
-            finishTest();
-        });
+        document.getElementById('confirm-yes').addEventListener('click', () => { hideModal(); finishTest(); });
         document.getElementById('confirm-no').addEventListener('click', hideModal);
     });
-
-    // Загрузка настроек из settings.txt
+    function hideModal() {
+        document.getElementById('confirm-modal').classList.add('hidden');
+    }
+    // Загрузка настроек
     async function loadSettings() {
         try {
             const response = await fetch('settings.txt');
@@ -456,17 +372,12 @@
             const lines = text.split('\n').filter(line => line.trim() !== '');
             lines.forEach(line => {
                 let [key, value] = line.split('=');
-                if (key && value) {
-                    settings[key.trim()] = value.trim();
-                }
+                if (key && value) { settings[key.trim()] = value.trim(); }
             });
             document.getElementById('exam-time').textContent = `Время: ${formatTime(parseInt(settings.time) || 1200)}`;
-        } catch (error) {
-            console.error("Ошибка загрузки settings.txt: " + error);
-        }
+        } catch (error) { console.error("Ошибка загрузки settings.txt: " + error); }
     }
-
-    // Загрузка правильных ответов из bilet.txt
+    // Загрузка ответов
     async function loadBiletData() {
         try {
             const response = await fetch('bilet.txt');
@@ -480,12 +391,9 @@
                     biletData[ticketNumber] = answerKey;
                 }
             });
-        } catch (error) {
-            console.error("Ошибка загрузки bilet.txt: " + error);
-        }
+        } catch (error) { console.error("Ошибка загрузки bilet.txt: " + error); }
     }
-
-    // Загрузка комментариев из komment.txt
+    // Загрузка комментариев
     async function loadKommentData() {
         try {
             const response = await fetch('komment.txt');
@@ -504,11 +412,8 @@
                     kommentData[currentTicketKey][qNum] = line;
                 }
             });
-        } catch (error) {
-            console.error("Ошибка загрузки komment.txt: " + error);
-        }
+        } catch (error) { console.error("Ошибка загрузки komment.txt: " + error); }
     }
-
     // Инициализация кнопок билетов для экзамена
     function initBiletSelection() {
         const container = document.getElementById('bilet-selection');
@@ -523,8 +428,7 @@
             container.appendChild(btn);
         }
     }
-
-    // Инициализация выпадающего списка для выбора билета в обучении
+    // Инициализация выпадающего списка для обучения
     function initTrainingTicketSelect() {
         const select = document.getElementById('training-ticket-select');
         select.innerHTML = '';
@@ -540,7 +444,6 @@
             loadBilet(newTicket);
         });
     }
-
     // Выбор билета (для экзамена)
     function selectBilet(biletNumber) {
         currentTicket = biletNumber;
@@ -554,63 +457,58 @@
             }
         });
     }
-
-    // Выбор случайного билета (для экзамена)
+    // Выбор случайного билета
     function selectRandomBilet() {
         const total = parseInt(settings.bilets) || 0;
         const random = Math.floor(Math.random() * total) + 1;
         selectBilet(random);
     }
-
-    // Установка режима: обучение или экзамен
+    // Установка режима
     function setMode(mode) {
         currentMode = mode;
         userAnswers = {};
         clearInterval(timer);
-        // Скрываем все области
+        hideModal();
         document.getElementById('exam-setup').style.display = 'none';
         document.getElementById('test-area').style.display = 'none';
         document.getElementById('results-area').style.display = 'none';
         document.querySelectorAll('.mode-selection button').forEach(btn => btn.classList.remove('active-mode'));
         if (mode === 'training') {
             document.getElementById('training-mode').classList.add('active-mode');
-            // Показываем dropdown для выбора билета в обучении
             document.getElementById('training-ticket-container').style.display = 'block';
             loadBilet(1);
             document.getElementById('test-area').style.display = 'block';
             document.getElementById('exam-timer').classList.add('hidden');
-            document.getElementById('finish-test').classList.add('hidden'); // В обучении кнопка скрыта
+            document.getElementById('finish-test').classList.add('hidden');
+            document.getElementById('back-to-modes-training').classList.remove('hidden');
             document.getElementById('explanation-toggle').classList.remove('hidden');
         } else if (mode === 'exam') {
             document.getElementById('exam-mode').classList.add('active-mode');
             document.getElementById('exam-setup').style.display = 'block';
             document.getElementById('training-ticket-container').style.display = 'none';
-            // В экзамене кнопка "Завершить тест" всегда включена и центрирована
             document.getElementById('finish-test').classList.remove('hidden');
+            document.getElementById('back-to-modes-training').classList.add('hidden');
         }
     }
-
-    // Загрузка билета: загружаем вопросы выбранного билета и показываем первый вопрос
+    // Загрузка билета
     async function loadBilet(ticketNumber) {
         currentTicket = ticketNumber;
         currentQuestionIndex = 0;
+        showLoader();
         await loadQuestions(ticketNumber);
-        if (questions.length === 0) {
-            alert("Вопросы для билета " + ticketNumber + " не найдены.");
-            return;
-        }
+        hideLoader();
+        if (questions.length === 0) { alert("Вопросы для билета " + ticketNumber + " не найдены."); return; }
         questionsCount = questions.length;
         updateQuestionNavigation();
         displayQuestion();
     }
-
-    // Загрузка вопросов для выбранного билета (с декодированием ANSI -> windows-1251)
+    // Загрузка вопросов с декодированием ANSI->windows-1251
     async function loadQuestions(ticket) {
         questions = [];
         let q = 1;
         while (true) {
             try {
-                const response = await fetch(`gai/questions/${ticket}-${q}.txt`);
+                const response = await fetch(`${settings.path}/questions/${ticket}-${q}.txt`);
                 if (!response.ok) break;
                 const buffer = await response.arrayBuffer();
                 let decoder = new TextDecoder('windows-1251');
@@ -622,17 +520,13 @@
                     options: lines.slice(1),
                     correctAnswer: (biletData[ticket] && biletData[ticket].length >= q) ? parseInt(biletData[ticket].charAt(q - 1)) : null,
                     explanation: (kommentData[ticket] && kommentData[ticket][q]) || "",
-                    image: `gai/images/Pdd_${String(ticket).padStart(2, '0')}_${String(q).padStart(2, '0')}.jpg`
+                    image: `${settings.path}/images/Pdd_${String(ticket).padStart(2, '0')}_${String(q).padStart(2, '0')}.jpg`
                 };
                 questions.push(questionObj);
                 q++;
-            } catch (e) {
-                console.error(e);
-                break;
-            }
+            } catch (e) { console.error(e); break; }
         }
     }
-
     // Обновление навигации по вопросам
     function updateQuestionNavigation() {
         const nav = document.getElementById('question-navigation');
@@ -642,51 +536,30 @@
             btn.className = 'question-number';
             btn.textContent = i + 1;
             btn.dataset.index = i;
-            btn.addEventListener('click', () => {
-                currentQuestionIndex = i;
-                displayQuestion();
-            });
+            btn.addEventListener('click', () => { currentQuestionIndex = i; displayQuestion(); });
             if (currentMode === 'training') {
                 if (userAnswers[`${currentTicket}-${i}`]) {
                     const userAns = userAnswers[`${currentTicket}-${i}`];
                     const correctAns = questions[i].correctAnswer;
-                    if (userAns === correctAns) {
-                        btn.classList.add('correct');
-                    } else {
-                        btn.classList.add('incorrect');
-                    }
+                    btn.classList.add(userAns === correctAns ? 'correct' : 'incorrect');
                 }
             } else if (currentMode === 'exam') {
-                if (userAnswers[`${currentTicket}-${i}`]) {
-                    btn.classList.add('answered');
-                }
+                if (userAnswers[`${currentTicket}-${i}`]) { btn.classList.add('answered'); }
             }
-            if (i === currentQuestionIndex) {
-                btn.classList.add('active');
-            }
+            if (i === currentQuestionIndex) { btn.classList.add('active'); }
             nav.appendChild(btn);
         }
     }
-
     // Отображение текущего вопроса
     function displayQuestion() {
         const qObj = questions[currentQuestionIndex];
         document.getElementById('question-number').textContent = `Вопрос ${currentQuestionIndex + 1}`;
         document.getElementById('question-text').textContent = qObj.questionText;
-
-        // Работа с изображением
         const imgElem = document.getElementById('question-image');
         imgElem.style.display = 'none';
         imgElem.src = qObj.image;
-        imgElem.onerror = function() {
-            imgElem.onerror = null;
-            imgElem.src = settings.path ? settings.path + "img.jpg" : "gai/img.jpg";
-        };
-        imgElem.onload = function() {
-            imgElem.style.display = 'block';
-        };
-
-        // Варианты ответов
+        imgElem.onerror = function() { imgElem.onerror = null; imgElem.src = settings.path ? settings.path + "img.jpg" : "gai/img.jpg"; };
+        imgElem.onload = function() { imgElem.style.display = 'block'; };
         const optionsDiv = document.getElementById('answer-options');
         optionsDiv.innerHTML = '';
         qObj.options.forEach((opt, idx) => {
@@ -699,17 +572,11 @@
                 optionDiv.classList.add('selected');
                 if (currentMode === 'training') {
                     const correctAns = qObj.correctAnswer;
-                    if ((idx + 1) === correctAns) {
-                        optionDiv.classList.add('correct');
-                    } else {
-                        optionDiv.classList.add('incorrect');
-                    }
+                    optionDiv.classList.add((idx + 1) === correctAns ? 'correct' : 'incorrect');
                 }
             }
             optionsDiv.appendChild(optionDiv);
         });
-
-        // Скрываем пояснение и обновляем текст кнопки подсказки
         const expDiv = document.getElementById('explanation');
         expDiv.style.display = 'none';
         expDiv.textContent = "";
@@ -719,10 +586,8 @@
         } else {
             document.getElementById('explanation-toggle').classList.add('hidden');
         }
-
         updateQuestionNavigation();
     }
-
     // Обработка выбора ответа
     function selectAnswer(optionNumber) {
         const key = `${currentTicket}-${currentQuestionIndex}`;
@@ -732,18 +597,12 @@
             updateAnswerUI();
             if (optionNumber !== qObj.correctAnswer) {
                 const expDiv = document.getElementById('explanation');
-                expDiv.textContent = qObj.explanation || "Подсказка отсутствует";
+                expDiv.innerHTML = `<strong>Правильный ответ: ${qObj.options[qObj.correctAnswer - 1]}</strong><br><br>${qObj.explanation || ""}`;
                 expDiv.style.display = 'block';
                 document.getElementById('explanation-toggle').textContent = 'Скрыть подсказку';
             } else {
-                setTimeout(() => {
-                    if (currentQuestionIndex < questionsCount - 1) {
-                        currentQuestionIndex++;
-                        displayQuestion();
-                    } else {
-                        alert("Вы прошли все вопросы билета.");
-                    }
-                }, 1000);
+                let prevIndex = currentQuestionIndex;
+                setTimeout(() => { if (currentQuestionIndex === prevIndex) { if (currentQuestionIndex < questionsCount - 1) { currentQuestionIndex++; displayQuestion(); } } }, 1000);
             }
         } else if (currentMode === 'exam') {
             userAnswers[key] = optionNumber;
@@ -751,7 +610,6 @@
             updateQuestionNavigation();
         }
     }
-
     // Обновление отображения выбранных вариантов
     function updateAnswerUI() {
         const optionsDiv = document.getElementById('answer-options');
@@ -762,22 +620,17 @@
                 optionElem.classList.add('selected');
                 if (currentMode === 'training') {
                     const correctAns = questions[currentQuestionIndex].correctAnswer;
-                    if (optionNumber === correctAns) {
-                        optionElem.classList.add('correct');
-                    } else {
-                        optionElem.classList.add('incorrect');
-                    }
+                    optionElem.classList.add(optionNumber === correctAns ? 'correct' : 'incorrect');
                 }
             }
         });
     }
-
     // Переключение отображения подсказки (по кнопке)
     function toggleExplanation() {
         const expDiv = document.getElementById('explanation');
         const qObj = questions[currentQuestionIndex];
         if (expDiv.style.display === 'none' || expDiv.style.display === '') {
-            expDiv.textContent = qObj.explanation || "Подсказка отсутствует";
+            expDiv.innerHTML = `<strong>Правильный ответ: ${qObj.options[qObj.correctAnswer - 1]}</strong><br><br>${qObj.explanation || "Подсказка отсутствует"}`;
             expDiv.style.display = 'block';
             document.getElementById('explanation-toggle').textContent = 'Скрыть подсказку';
         } else {
@@ -785,83 +638,54 @@
             document.getElementById('explanation-toggle').textContent = 'Показать подсказку';
         }
     }
-
     // Переход к предыдущему вопросу
     function goToPrevQuestion() {
-        if (currentQuestionIndex > 0) {
-            currentQuestionIndex--;
-            displayQuestion();
-        }
+        if (currentQuestionIndex > 0) { currentQuestionIndex--; displayQuestion(); }
     }
-
     // Переход к следующему вопросу
     function goToNextQuestion() {
-        if (currentQuestionIndex < questionsCount - 1) {
-            currentQuestionIndex++;
-            displayQuestion();
-        }
+        if (currentQuestionIndex < questionsCount - 1) { currentQuestionIndex++; displayQuestion(); }
     }
-
-    // Обработчик кнопки завершения теста в режиме экзамена
+    // Обработчик кнопки завершения теста в экзамене
     function finishTestHandler() {
         if (currentMode === 'exam') {
             let unanswered = [];
             for (let i = 0; i < questionsCount; i++) {
-                if (!userAnswers[`${currentTicket}-${i}`]) {
-                    unanswered.push(i + 1);
-                }
+                if (!userAnswers[`${currentTicket}-${i}`]) { unanswered.push(i + 1); }
             }
-            if (unanswered.length > 0) {
-                showModal();
-            } else {
-                finishTest();
-            }
+            if (unanswered.length > 0) { showModal(); }
+            else { finishTest(); }
         }
     }
-
-    // Показ модального окна
+    // Показ модального окна подтверждения
     function showModal() {
         document.getElementById('confirm-modal').classList.remove('hidden');
     }
-
-    // Скрыть модальное окно
-    function hideModal() {
-        document.getElementById('confirm-modal').classList.add('hidden');
-    }
-
-    // Начало экзамена: загрузка выбранного билета, запуск таймера и переход в область теста
+    // Начало экзамена
     async function startExam() {
         userAnswers = {};
         document.getElementById('exam-setup').style.display = 'none';
         document.getElementById('test-area').style.display = 'block';
         document.getElementById('exam-timer').classList.remove('hidden');
-        // Кнопка завершения теста всегда видна и расположена по центру
         document.getElementById('finish-test').style.display = 'block';
         await loadBilet(currentTicket);
         remainingTime = parseInt(settings.time) || 1200;
         updateTimer();
         timer = setInterval(updateTimer, 1000);
     }
-
-    // Обновление таймера экзамена
+    // Обновление таймера
     function updateTimer() {
         remainingTime--;
-        if (remainingTime <= 0) {
-            clearInterval(timer);
-            finishTest();
-            return;
-        }
+        if (remainingTime <= 0) { clearInterval(timer); finishTest(); return; }
         document.getElementById('exam-timer').textContent = `Осталось: ${formatTime(remainingTime)}`;
     }
-
-    // Форматирование времени (MM:SS)
+    // Форматирование времени
     function formatTime(seconds) {
         const minutes = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     }
-
-    // Завершение теста (для экзамена)
+    // Завершение теста (экзамен)
     function finishTest() {
         clearInterval(timer);
         let correctCount = 0;
@@ -869,15 +693,12 @@
             const key = `${currentTicket}-${i}`;
             const userAns = userAnswers[key];
             const correctAns = questions[i].correctAnswer;
-            if (userAns === correctAns) {
-                correctCount++;
-            }
+            if (userAns === correctAns) { correctCount++; }
         }
         document.getElementById('test-area').style.display = 'none';
         document.getElementById('results-area').style.display = 'block';
         document.getElementById('score').textContent = `Правильных ответов: ${correctCount} из ${questionsCount}`;
         document.getElementById('time-taken').textContent = `Затраченное время: ${formatTime((parseInt(settings.time) || 1200) - remainingTime)}`;
-
         const resultsDetails = document.getElementById('results-details');
         resultsDetails.innerHTML = '';
         for (let i = 0; i < questionsCount; i++) {
@@ -887,10 +708,11 @@
             const correctAns = qObj.correctAnswer;
             const isCorrect = userAns === correctAns;
             const resultItem = document.createElement('div');
-            resultItem.className = 'result-item';
+            resultItem.className = 'result-item ' + (isCorrect ? 'correct' : 'incorrect');
             resultItem.innerHTML = `
           <h4>Вопрос ${i + 1}: ${isCorrect ? '✓' : '✗'}</h4>
           <p>${qObj.questionText}</p>
+          <img src="${qObj.image}" alt="Изображение к вопросу" class="question-image" style="width:300px; margin:10px 0;" onerror="this.style.display='none'">
           <p>Ваш ответ: ${userAns ? qObj.options[userAns - 1] : 'Не отвечено'}</p>
           ${!isCorrect ? `<p>Правильный ответ: ${qObj.options[correctAns - 1]}</p>` : ''}
           <button class="btn btn-info explanation-button" onclick="toggleResultExplanation(this)">Показать подсказку</button>
@@ -899,8 +721,7 @@
             resultsDetails.appendChild(resultItem);
         }
     }
-
-    // Функция для переключения отображения пояснения в результатах
+    // Переключение отображения пояснения в результатах
     function toggleResultExplanation(btn) {
         const expDiv = btn.nextElementSibling;
         if (expDiv.style.display === "none" || expDiv.style.display === "") {
@@ -911,7 +732,6 @@
             btn.textContent = "Показать подсказку";
         }
     }
-
     // Возврат к выбору режима
     function backToModeSelection() {
         userAnswers = {};
@@ -921,6 +741,7 @@
         document.getElementById('results-area').style.display = 'none';
         document.querySelectorAll('.mode-selection button').forEach(btn => btn.classList.remove('active-mode'));
         currentMode = '';
+        hideModal();
     }
 </script>
 </body>

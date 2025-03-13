@@ -338,6 +338,9 @@
     let userAnswers = {};
     let timer = null;
     let remainingTime = 0;
+    // переменная для определения действия модального окна
+    let modalAction = "";
+
     document.addEventListener('DOMContentLoaded', async () => {
         showLoader();
         await loadSettings();
@@ -359,16 +362,23 @@
         // Кнопки возврата
         document.getElementById('back-to-modes').addEventListener('click', () => {
             if (currentMode === 'exam') {
-                // Если тест уже запущен в экзамене, показать предупреждение
-                // document.getElementById('confirm-message').textContent = "Вы уверены, что хотите выйти из теста? Все незавершенные ответы будут потеряны.";
+                // При попытке выйти из теста в экзамене устанавливаем modalAction как "exit"
+                modalAction = "exit";
                 showModal("Вы уверены, что хотите выйти из теста? Все незавершенные ответы будут потеряны.");
             } else {
                 backToModeSelection();
             }
         });
         document.getElementById('back-to-modes-results').addEventListener('click', backToModeSelection);
-        document.getElementById('back-from-ticket').addEventListener('click', backToModeSelection);
-        document.getElementById('confirm-yes').addEventListener('click', () => { hideModal(); backToModeSelection(); });
+        document.getElementById('back-from-ticket').addEventListener('click', () => { backToModeSelection(); });
+        document.getElementById('confirm-yes').addEventListener('click', () => {
+            hideModal();
+            if (modalAction === "finish") {
+                finishTest();
+            } else if (modalAction === "exit") {
+                backToModeSelection();
+            }
+        });
         document.getElementById('confirm-no').addEventListener('click', hideModal);
     });
     function hideModal() {
@@ -664,8 +674,13 @@
             for (let i = 0; i < questionsCount; i++) {
                 if (!userAnswers[`${currentTicket}-${i}`]) { unanswered.push(i + 1); }
             }
-            if (unanswered.length > 0) { showModal("Вы не ответили на все вопросы. Вы уверены, что хотите завершить тест?"); }
-            else { finishTest(); }
+            if (unanswered.length > 0) {
+                // Если есть незаполненные вопросы, устанавливаем modalAction как "finish"
+                modalAction = "finish";
+                showModal("Вы не ответили на все вопросы. Вы уверены, что хотите завершить тест?");
+            } else {
+                finishTest();
+            }
         }
     }
     // Показ модального окна подтверждения с пользовательским сообщением

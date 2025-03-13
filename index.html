@@ -97,7 +97,7 @@
         }
         .question-number:hover { background-color: var(--primary-color); color: white; }
         .question-number.active { background-color: var(--primary-color); color: white; font-weight: bold; }
-        /* В обучении: правильный/неправильный ответ */
+        /* В обучении: окрашиваем кружки по результату */
         .question-number.correct { background-color: var(--success-color); color: white; }
         .question-number.incorrect { background-color: var(--danger-color); color: white; }
         /* В экзамене: отмечаем, что ответ дан */
@@ -158,7 +158,7 @@
         .result-item.correct { background-color: #e0f9e0; }
         .result-item.incorrect { background-color: #f9e0e0; }
         .result-item:last-child { border-bottom: none; }
-        .hidden { display: none; }
+        .hidden { display: none!important; }
         .bilet-selection {
             display: flex;
             flex-wrap: wrap;
@@ -185,10 +185,9 @@
             font-size: 16px;
             margin-left: 10px;
         }
-        /* Центрирование кнопки завершения теста в экзамене */
+        /* Центрирование кнопок возврата и завершения теста */
+        .back-to-modes { display: block; margin: 20px auto; }
         #finish-test { display: block; margin: 20px auto; }
-        /* Кнопка возврата для обучения */
-        #back-to-modes-training { display: block; margin: 20px auto; }
         /* Стили для модального окна подтверждения */
         .modal {
             position: fixed;
@@ -232,8 +231,6 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        .hidden { display: none!important; }
         .explanation-button{
             margin-top: 10px;
         }
@@ -247,11 +244,12 @@
 </div>
 <header>
     <div class="container">
-        <h1>ПДД</h1>
+        <h1>Автошкола - Система тестирования</h1>
     </div>
 </header>
 <div class="container" id="main-container">
-    <div class="mode-selection">
+    <!-- Блок выбора режима -->
+    <div class="mode-selection" id="mode-selection">
         <button id="training-mode" class="btn btn-primary">Режим обучения</button>
         <button id="exam-mode" class="btn btn-primary">Режим экзамена</button>
     </div>
@@ -264,6 +262,8 @@
         <button id="random-bilet" class="btn btn-warning">Случайный билет</button>
         <div id="exam-time" class="timer">Время: 00:00</div>
         <button id="start-exam" class="btn btn-success">Начать экзамен</button>
+        <!-- Кнопка возврата в экзамене (на этапе выбора билета) без предупреждения -->
+        <button id="back-from-ticket" class="btn btn-primary back-to-modes">Вернуться к выбору режима</button>
     </div>
     <!-- Область тестирования (общая для обучения и экзамена) -->
     <div id="test-area" class="test-area card">
@@ -292,8 +292,8 @@
         </div>
         <!-- В режиме экзамена кнопка "Завершить тест" всегда видна -->
         <button id="finish-test" class="btn btn-danger">Завершить тест</button>
-        <!-- В режиме обучения кнопка возврата -->
-        <button id="back-to-modes-training" class="btn btn-primary hidden">Вернуться к выбору режима</button>
+        <!-- Кнопка возврата для всех режимов (в тестовой области) -->
+        <button id="back-to-modes" class="btn btn-primary back-to-modes">Вернуться к выбору режима</button>
     </div>
     <!-- Область результатов -->
     <div id="results-area" class="results-area card">
@@ -305,13 +305,13 @@
         <div id="results-details" class="results-details">
             <!-- Детали результатов будут добавлены динамически -->
         </div>
-        <button id="back-to-modes" class="btn btn-primary">Вернуться к выбору режима</button>
+        <button id="back-to-modes-results" class="btn btn-primary back-to-modes">Вернуться к выбору режима</button>
     </div>
 </div>
-<!-- Модальное окно для подтверждения завершения экзамена -->
+<!-- Модальное окно для подтверждения выхода из экзамена -->
 <div id="confirm-modal" class="modal hidden">
     <div class="modal-content">
-        <p>Вы не ответили на все вопросы. Вы уверены, что хотите завершить тест?</p>
+        <p id="confirm-message">Вы уверены, что хотите выйти из теста?</p>
         <button id="confirm-yes" class="btn btn-success">Да</button>
         <button id="confirm-no" class="btn btn-danger">Нет</button>
     </div>
@@ -327,16 +327,15 @@
         document.getElementById('main-container').classList.remove('blur');
     }
     // Глобальные переменные
-    let settings = {};            // Загружаются из settings.txt
-    let biletData = {};           // Правильные ответы (из bilet.txt)
-    let kommentData = {};         // Пояснения (из komment.txt)
-    let questions = [];           // Массив объектов вопросов для выбранного билета
-
-    let currentMode = '';         // 'training' или 'exam'
-    let currentTicket = 1;        // Выбранный билет
-    let currentQuestionIndex = 0; // Индекс текущего вопроса (0-indexed)
-    let questionsCount = 0;       // Общее число вопросов билета
-    let userAnswers = {};         // Ключ: "ticket-index", значение: номер выбранного ответа
+    let settings = {};
+    let biletData = {};
+    let kommentData = {};
+    let questions = [];
+    let currentMode = '';
+    let currentTicket = 1;
+    let currentQuestionIndex = 0;
+    let questionsCount = 0;
+    let userAnswers = {};
     let timer = null;
     let remainingTime = 0;
     document.addEventListener('DOMContentLoaded', async () => {
@@ -348,6 +347,7 @@
         initBiletSelection();
         initTrainingTicketSelect();
         hideModal();
+        // При выборе режима, скрываем блок выбора режимов
         document.getElementById('training-mode').addEventListener('click', () => setMode('training'));
         document.getElementById('exam-mode').addEventListener('click', () => setMode('exam'));
         document.getElementById('random-bilet').addEventListener('click', selectRandomBilet);
@@ -356,9 +356,19 @@
         document.getElementById('next-question').addEventListener('click', goToNextQuestion);
         document.getElementById('explanation-toggle').addEventListener('click', toggleExplanation);
         document.getElementById('finish-test').addEventListener('click', finishTestHandler);
-        document.getElementById('back-to-modes-training').addEventListener('click', backToModeSelection);
-        document.getElementById('back-to-modes').addEventListener('click', backToModeSelection);
-        document.getElementById('confirm-yes').addEventListener('click', () => { hideModal(); finishTest(); });
+        // Кнопки возврата
+        document.getElementById('back-to-modes').addEventListener('click', () => {
+            if (currentMode === 'exam') {
+                // Если тест уже запущен в экзамене, показать предупреждение
+                // document.getElementById('confirm-message').textContent = "Вы уверены, что хотите выйти из теста? Все незавершенные ответы будут потеряны.";
+                showModal("Вы уверены, что хотите выйти из теста? Все незавершенные ответы будут потеряны.");
+            } else {
+                backToModeSelection();
+            }
+        });
+        document.getElementById('back-to-modes-results').addEventListener('click', backToModeSelection);
+        document.getElementById('back-from-ticket').addEventListener('click', backToModeSelection);
+        document.getElementById('confirm-yes').addEventListener('click', () => { hideModal(); backToModeSelection(); });
         document.getElementById('confirm-no').addEventListener('click', hideModal);
     });
     function hideModal() {
@@ -463,31 +473,32 @@
         const random = Math.floor(Math.random() * total) + 1;
         selectBilet(random);
     }
-    // Установка режима
+    // Установка режима: обучение или экзамен
     function setMode(mode) {
         currentMode = mode;
         userAnswers = {};
         clearInterval(timer);
         hideModal();
+        // Скрываем блок выбора режимов
+        document.getElementById('mode-selection').style.display = 'none';
         document.getElementById('exam-setup').style.display = 'none';
         document.getElementById('test-area').style.display = 'none';
         document.getElementById('results-area').style.display = 'none';
-        document.querySelectorAll('.mode-selection button').forEach(btn => btn.classList.remove('active-mode'));
         if (mode === 'training') {
-            document.getElementById('training-mode').classList.add('active-mode');
             document.getElementById('training-ticket-container').style.display = 'block';
             loadBilet(1);
             document.getElementById('test-area').style.display = 'block';
             document.getElementById('exam-timer').classList.add('hidden');
+            // В обучении скрываем кнопку "Завершить тест" и показываем кнопку возврата
             document.getElementById('finish-test').classList.add('hidden');
-            document.getElementById('back-to-modes-training').classList.remove('hidden');
+            document.getElementById('back-to-modes').classList.remove('hidden');
             document.getElementById('explanation-toggle').classList.remove('hidden');
         } else if (mode === 'exam') {
-            document.getElementById('exam-mode').classList.add('active-mode');
-            document.getElementById('exam-setup').style.display = 'block';
             document.getElementById('training-ticket-container').style.display = 'none';
+            document.getElementById('exam-setup').style.display = 'block';
+            // В экзамене показываем обе кнопки возврата: в блоке настройки и в тестовой области
             document.getElementById('finish-test').classList.remove('hidden');
-            document.getElementById('back-to-modes-training').classList.add('hidden');
+            document.getElementById('back-to-modes').classList.remove('hidden');
         }
     }
     // Загрузка билета
@@ -502,13 +513,13 @@
         updateQuestionNavigation();
         displayQuestion();
     }
-    // Загрузка вопросов с декодированием ANSI->windows-1251
+    // Загрузка вопросов (с декодированием ANSI->windows-1251)
     async function loadQuestions(ticket) {
         questions = [];
         let q = 1;
         while (true) {
             try {
-                const response = await fetch(`${settings.path}/questions/${ticket}-${q}.txt`);
+                const response = await fetch(`gai/questions/${ticket}-${q}.txt`);
                 if (!response.ok) break;
                 const buffer = await response.arrayBuffer();
                 let decoder = new TextDecoder('windows-1251');
@@ -520,7 +531,7 @@
                     options: lines.slice(1),
                     correctAnswer: (biletData[ticket] && biletData[ticket].length >= q) ? parseInt(biletData[ticket].charAt(q - 1)) : null,
                     explanation: (kommentData[ticket] && kommentData[ticket][q]) || "",
-                    image: `${settings.path}/images/Pdd_${String(ticket).padStart(2, '0')}_${String(q).padStart(2, '0')}.jpg`
+                    image: `gai/images/Pdd_${String(ticket).padStart(2, '0')}_${String(q).padStart(2, '0')}.jpg`
                 };
                 questions.push(questionObj);
                 q++;
@@ -646,19 +657,20 @@
     function goToNextQuestion() {
         if (currentQuestionIndex < questionsCount - 1) { currentQuestionIndex++; displayQuestion(); }
     }
-    // Обработчик кнопки завершения теста в экзамене
+    // Обработчик кнопки завершения теста (экзамен)
     function finishTestHandler() {
         if (currentMode === 'exam') {
             let unanswered = [];
             for (let i = 0; i < questionsCount; i++) {
                 if (!userAnswers[`${currentTicket}-${i}`]) { unanswered.push(i + 1); }
             }
-            if (unanswered.length > 0) { showModal(); }
+            if (unanswered.length > 0) { showModal("Вы не ответили на все вопросы. Вы уверены, что хотите завершить тест?"); }
             else { finishTest(); }
         }
     }
-    // Показ модального окна подтверждения
-    function showModal() {
+    // Показ модального окна подтверждения с пользовательским сообщением
+    function showModal(message) {
+        document.getElementById('confirm-message').textContent = message;
         document.getElementById('confirm-modal').classList.remove('hidden');
     }
     // Начало экзамена
@@ -699,6 +711,7 @@
         document.getElementById('results-area').style.display = 'block';
         document.getElementById('score').textContent = `Правильных ответов: ${correctCount} из ${questionsCount}`;
         document.getElementById('time-taken').textContent = `Затраченное время: ${formatTime((parseInt(settings.time) || 1200) - remainingTime)}`;
+
         const resultsDetails = document.getElementById('results-details');
         resultsDetails.innerHTML = '';
         for (let i = 0; i < questionsCount; i++) {
@@ -739,7 +752,8 @@
         document.getElementById('exam-setup').style.display = 'none';
         document.getElementById('test-area').style.display = 'none';
         document.getElementById('results-area').style.display = 'none';
-        document.querySelectorAll('.mode-selection button').forEach(btn => btn.classList.remove('active-mode'));
+        // Показываем блок выбора режимов
+        document.getElementById('mode-selection').style.display = 'flex';
         currentMode = '';
         hideModal();
     }

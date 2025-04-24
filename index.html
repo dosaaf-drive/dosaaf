@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Автошкола - Система тестирования</title>
+    <title>Тест ПДД ПМР - 2025 ДОСААФ Авто</title>
     <style>
         :root {
             --primary-color: #3498db;
@@ -26,10 +26,20 @@
             line-height: 1.6;
             color: #333;
         }
+        .background-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            object-fit: cover;
+            opacity: 0.3;
+        }
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 20px 10px;
             position: relative;
             transition: filter 0.3s ease, opacity 0.3s ease;
         }
@@ -43,6 +53,7 @@
             color: white;
             margin-bottom: 30px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 0.7em;
         }
         header h1 { text-align: center; }
         .mode-selection {
@@ -234,9 +245,24 @@
         .explanation-button{
             margin-top: 10px;
         }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .logo {
+            height: 50px;
+            width: auto;
+        }
+
+        header h1 { text-align: center; color: #fce25b}
+        .exam-setup.hidden, .test-area.hidden, .results-area.hidden { display: none; }
+
     </style>
 </head>
 <body>
+<img class="background-image" src="/gai/fon.jpg" alt="Фоновое изображение">
 <!-- Индикатор загрузки -->
 <div id="loader">
     <div class="spinner"></div>
@@ -244,7 +270,10 @@
 </div>
 <header>
     <div class="container">
-        <h1>Автошкола - Система тестирования</h1>
+        <div class="logo-container">
+            <img src="/gai/logo.png" alt="Логотип Автошколы" class="logo">
+            <h1>Тест ПДД ПМР - 2025<br>ДОСААФ Авто</h1>
+        </div>
     </div>
 </header>
 <div class="container" id="main-container">

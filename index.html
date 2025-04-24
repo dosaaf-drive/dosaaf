@@ -28,10 +28,11 @@
         }
         .background-image {
             position: fixed;
-            top: 0;
-            left: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             width: 100%;
-            height: 100%;
+            max-width: 1000px;
             z-index: -2;
             object-fit: cover;
             opacity: 0.3;
@@ -262,7 +263,7 @@
     </style>
 </head>
 <body>
-<img class="background-image" src="/gai/fon.jpg" alt="Фоновое изображение">
+<img class="background-image" src="gai/fon.jpg" alt="Фоновое изображение">
 <!-- Индикатор загрузки -->
 <div id="loader">
     <div class="spinner"></div>
@@ -271,7 +272,7 @@
 <header>
     <div class="container">
         <div class="logo-container">
-            <img src="/gai/logo.png" alt="Логотип Автошколы" class="logo">
+            <img src="gai/logo.png" alt="Логотип Автошколы" class="logo">
             <h1>Тест ПДД ПМР - 2025<br>ДОСААФ Авто</h1>
         </div>
     </div>
